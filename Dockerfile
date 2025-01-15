@@ -1,4 +1,4 @@
-FROM node:18.19.1-alpine AS build
+FROM node:20.11.1-alpine AS build
 
 RUN mkdir -p /usr/src/app/node_modules && chown -R node:node /usr/src/app
 WORKDIR /usr/src/app
@@ -8,7 +8,7 @@ RUN npm ci
 RUN npm run build
 RUN rm ./src -rf
 
-FROM node:18.19.1-alpine AS host
+FROM node:20.11.1-alpine AS host
 COPY --from=build /usr/src/app /usr/app
 WORKDIR /usr/app
 # RUN mkdir -p /data && chown -R node:node /data
