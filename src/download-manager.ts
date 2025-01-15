@@ -44,12 +44,14 @@ const logger = l.child({}, { msgPrefix: '[DownloadManager]' });
     if (target.endsWith('.magnet')) {
       logger.trace(`Target is a magnet`);
       torrentInfo = await debridLinkClient.addTorrent({
+        async: true,
         url: content.toString()
       });
     }
     else {
       logger.trace(`Target is a torrent`);
       torrentInfo = await debridLinkClient.addTorrent({
+        async: true,
         file: content,
         fileName: basename(target)
       });

@@ -38,16 +38,29 @@ export class DebridLinkClient {
    * @returns 
    */
   async #fetch<T>(input: string | URL, init?: RequestInit | undefined): Promise<T> {
-    if (init?.body && init.body.constructor.name !== 'Buffer') {
+    const isFormData = init?.body?.constructor.name === 'FormData'
+    if (init?.body && init.body.constructor.name !== 'Buffer' && !isFormData) {
       init.body = stringify(init.body as any);
     }
     const url = `${this.#API_URI}${input}`;
     const token = await this.#authManager.getToken();
+    logger.trace(`Auth Manager provided token '${token}'`);
+    let headers: HeadersInit = {
+      'Authorization': 'Bearer ' + token,
+      ...(init?.headers || {}),
+    };
+    if (init?.headers) {
+      delete init.headers;
+    }
+    if (!isFormData) {
+      headers = {
+        ...headers,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }
+    logger.trace(`Headers '${JSON.stringify(headers)}'`);
     const response = await retryableFetch(url, {
-      headers: {
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+      headers,
       ...init
     });
     if (response.status >= 200 && response.status < 300) {
@@ -119,6 +132,7 @@ export class DebridLinkClient {
     Object.entries(request)
       .filter(([prop]) => prop != 'file' && prop != 'fileName')
       .forEach(([prop, value]) => body.set(prop, value));
+    logger.trace('Building blob for form data');
     const fileBlob = new Blob([request.file]);
     body.set('file', fileBlob, request.fileName);
     return this.#fetch(`/seedbox/add`, {
