@@ -1,0 +1,62 @@
+version: '3.8'
+
+# Sample config using Aria2
+# It's using 3 folders:
+# ./blackhole/torrents/in-progress - Where Aria2 will output the downloads (mounted as /downloads in Aria2 service)
+# ./blackhole/torrents - Where the app will look for .torrents or .magnets
+# ./blackhole/downloads - Where the completed downloads will land
+
+services:
+  aria2-pro:
+    container_name: aria2-pro
+    image: p3terx/aria2-pro
+    environment:
+      # - PUID=65534
+      # - PGID=65534
+      - UMASK_SET=022
+      - RPC_SECRET=Secret!
+      - RPC_PORT=6800
+      - LISTEN_PORT=6888
+      - DISK_CACHE=64M
+      - IPV6_MODE=false
+    volumes:
+      - ./blackhole/aria2-config:/config
+      - ./blackhole/torrents/in-progress:/downloads
+    ports:
+      - 6800:6800
+      - 6888:6888
+      - 6888:6888/udp
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+
+  debrid-link-blackhole:
+    image: debrid-link-blackhole
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+      DEBRID_LINK_CLIENT_ID: <Your client id from https://debrid-link.fr/webapp/account/apps>
+      SMTP_HOST: <Your SMTP server host>
+      SMTP_PORT: <Your SMTP server port>
+      SMTP_USER: <Your SMTP server user>
+      SMTP_PASS: <Your SMTP server pass>
+      MAIL_FROM: <The sending email address>
+      MAIL_TO: <The receiving email address>
+      DATA: /data
+      # AKA
+      # BLACKHOLE: /data/torrents
+      # DOWNLOADS: /data/downloads
+      # IN_PROGESS: /data/torrents/in-progress
+      LOG_LEVEL: info
+      DOWNLOADER: Aria2
+      ARIA2_HOST: aria2-pro
+      ARIA2_PORT: 6800
+      ARIA2_SECURE: false
+      ARIA2_SECRET: Secret!
+      ARIA2_PATH: /jsonrpc
+    volumes:
+      - ./blackhole:/data

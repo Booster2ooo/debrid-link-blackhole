@@ -1,0 +1,31 @@
+{
+  "name": "debrid-link-blackhole",
+  "version": "1.0.0",
+  "description": "A torrent blackhole using Debrid-Link as client",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "npx tsc",
+    "pino-pretty": "npx pino-pretty",
+    "main": "node ./dist/main.js",
+    "build": "npm run tsc",
+    "dev": "npm run tsc && npm run main",
+    "start": "npm run main",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "pino-pretty": "^10.3.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@types/nodemailer": "^6.4.17",
+    "aria2": "^4.1.2",
+    "dotenv": "^16.4.5",
+    "node-mailjet": "^6.0.6",
+    "nodemailer": "^6.9.16",
+    "pino": "^8.19.0"
+  }
+}

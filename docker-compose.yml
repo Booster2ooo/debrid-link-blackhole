@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  debrid-link-blackhole:
+    image: debrid-link-blackhole
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+      DEBRID_LINK_CLIENT_ID: <Your client id from https://debrid-link.fr/webapp/account/apps>
+      SMTP_HOST: <Your SMTP server host>
+      SMTP_PORT: <Your SMTP server port>
+      SMTP_USER: <Your SMTP server user>
+      SMTP_PASS: <Your SMTP server pass>
+      MAIL_FROM: <The sending email address>
+      MAIL_TO: <The receiving email address>
+      DATA: /data
+      LOG_LEVEL: info
+      DOWNLOADER: Fetch
+    volumes:
+      - ./blackhole:/data
