@@ -115,7 +115,7 @@ export class AuthManager {
         return authResponse.access_token;
       }
       catch (ex) {
-        logger.info(`Unable to refresh token.`, { ex });
+        logger.info({ msg: `Unable to refresh token.`,  ex });
       }
     }
     await this.#waitLock();
@@ -138,7 +138,7 @@ export class AuthManager {
     const verificationExpiry = new Date();
     verificationExpiry.setSeconds(verificationExpiry.getSeconds() + deviceCode.expires_in);
     const verificationLink = `${deviceCode.verification_url}/${deviceCode.user_code}`;
-    logger.info(`Received device link: ${verificationLink}, expires on '${verificationExpiry}'`, { deviceCode });
+    logger.info({ msg: `Received device link: ${verificationLink}, expires on '${verificationExpiry}'`,  deviceCode });
     await this.#mailer.sendMail(deviceCode.user_code, verificationLink);
     while(!this.#accessToken && verificationExpiry >= new Date()) {
       try {

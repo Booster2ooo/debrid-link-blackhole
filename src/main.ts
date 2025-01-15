@@ -62,7 +62,7 @@ let watcher: Watcher | undefined;
             await unlink(filePath);
           }
           catch (ex) {
-            logger.error(`Unable to remove .torrent file '${filePath}'`, ex)
+            logger.error({ msg: `Unable to remove .torrent file '${filePath}'`,  ex })
           }
         }
         else {

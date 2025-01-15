@@ -39,19 +39,19 @@ export class Aria2Downloader implements IDownloader {
   async download(url: string, tempDestination: string, destination: string): Promise<void> {
     // tempDestination should be defined at Aria2 level and accessible to this app
     const filename = basename(destination);
-    logger.debug(`Starting download of '${url}' as '${filename}`, { url, filename });
+    logger.debug({ msg: `Starting download of '${url}' as '${filename}`, url, filename });
     const gid = await this.#aria2.call('addUri', [url], { out: filename } );
     return new Promise((resolve, reject) => {
       this.#aria2.on('onDownloadComplete', async (evt: any[]) => {
         if (evt.some(item => item.gid === gid)) {
-          logger.debug(`Download completed`, { url, filename });
+          logger.debug({ msg: `Download completed`,  url, filename });
           try {
-            logger.trace(`Moving out from temp`, { url, destination , tempDestination });
+            logger.trace({ msg: `Moving out from temp`, url, destination , tempDestination });
             await rename(tempDestination, destination);
             resolve();
           }
           catch (ex) {
-            logger.debug(`Unable to move download from '${tempDestination}' to '${destination}'`, ex);
+            logger.debug({ msg: `Unable to move download from '${tempDestination}' to '${destination}'`,  ex });
             reject(`Unable to move download from '${tempDestination}' to '${destination}'`);
           }
         }
@@ -59,14 +59,14 @@ export class Aria2Downloader implements IDownloader {
       this.#aria2.on('onDownloadError', (evt: any[]) => {
         const error = evt.find(item => item.gid === gid);
         if (!error) {
-          logger.debug(`Download failed`, { url, filename, error });
+          logger.debug({ msg: `Download failed`, url, filename, error });
           reject(error);
         }
       });
       
       // 24h timeout
       setTimeout(() => {
-        logger.debug(`Download of '${url}' timedout`, { url, filename });
+        logger.debug({ msg: `Download of '${url}' timedout`, url, filename });
         reject('aria2 never completed or errored, timing out');
       }, 24 * 60 * 60 * 1000);
     });

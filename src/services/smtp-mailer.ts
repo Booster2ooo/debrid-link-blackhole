@@ -49,9 +49,9 @@ export class SmtpMailer implements IMailer {
         html:`<p>Please confirm your Debrid Link device: <a href="${verificationLink}">${userCode}</a></p>` 
       }, (err: any, info: any) => {
         if (err) {
-          logger.error(`Couldn't send email, ${err}`, { err });
+          logger.error({ msg: `Couldn't send email, ${err}`, err });
         }
-        logger.debug(`Email sent, ${JSON.stringify(info)}`, { info });
+        logger.debug({ msg: `Email sent, ${JSON.stringify(info)}`,  info });
         resolve(info);
       })
     });

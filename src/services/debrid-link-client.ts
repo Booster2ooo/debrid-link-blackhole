@@ -67,7 +67,7 @@ export class DebridLinkClient {
       return response.json()
         .catch(() => Promise.resolve())
         .then((json: Response<T>) => {
-          logger.trace(`Got response payload`, { json });
+          logger.trace({ msg: `Got response payload`, json });
           return json.value as T;
         });
     }
@@ -87,7 +87,7 @@ export class DebridLinkClient {
    */
   async listTorrents(pager?: PagerRequest): Promise<TorrentInfo[]> {
     const params = stringify(pager as any);
-    logger.trace(`Listing torrents`, { pager });
+    logger.trace({ msg: `Listing torrents`,  pager });
     return this.#fetch(`/seedbox/list?${params}`);
   }
 
@@ -99,7 +99,7 @@ export class DebridLinkClient {
    */
   async getTorrentsActivity(pager?: ActivityRequest): Promise<TorrentActivityMap> {
     const params = stringify(pager as any);
-    logger.trace(`Getting torrents activity`, { pager });
+    logger.trace({ msg: `Getting torrents activity`,  pager });
     return this.#fetch(`/seedbox/activity?${params}`);
   }
 
@@ -113,7 +113,7 @@ export class DebridLinkClient {
    * @returns 
    */
   async addTorrent(request: AddTorrentRequest): Promise<TorrentInfo> {
-    logger.trace(`Adding torrent`, { request });
+    logger.trace({ msg: `Adding torrent`,  request });
     if (request.url) {
       if (request.file || request.fileName) {
         logger.warn('Using URL, ignoring file and fileName');
@@ -147,7 +147,7 @@ export class DebridLinkClient {
    * @returns 
    */
   async removeTorrent(ids: string|string[]): Promise<string[]> {
-    logger.trace(`Removing torrents`, { ids });
+    logger.trace({ msg: `Removing torrents`,  ids });
     return this.#fetch(`/seedbox/${(Array.isArray(ids) ? JSON.stringify(ids) : ids)}/remove`, {
       method: 'DELETE'
     });
@@ -158,7 +158,7 @@ export class DebridLinkClient {
    * @param id The id of torrent
    */
   async zipTorrentFiles(id: string): Promise<string[]> {
-    logger.trace(`Compressing torrent files`, { id });
+    logger.trace({ msg: `Compressing torrent files`,  id });
     return this.#fetch(`/seedbox/${id}/zip`, {
       method: 'POST'
     });
@@ -171,7 +171,7 @@ export class DebridLinkClient {
    * @returns 
    */
   async configureTorrent(id: string, unwantedFileIds: string|string[]): Promise<void> {
-    logger.trace(`Configure unwanted torrent files`, { id });
+    logger.trace({ msg: `Configure unwanted torrent files`,  id });
     return this.#fetch(`/seedbox/${id}/config`, {
       method: 'POST',
       body: {
@@ -202,7 +202,7 @@ export class DebridLinkClient {
   //  */
   // async listDownloadLinks(pager?: PagerRequest): Promise<DownloadInfo[]> {
   //   const params = stringify(pager as any);
-  //   logger.trace(`Listing download links`, { pager });
+  //   logger.trace({ msg: `Listing download links`,  pager });
   //   return this.#fetch(`/downloader/list?${params}`);
   // }
 
@@ -219,7 +219,7 @@ export class DebridLinkClient {
   //   if (password) {
   //     body.password = password;
   //   }
-  //   logger.trace(`Add link`, { url, password });
+  //   logger.trace({ msg: `Add link`, url, password });
   //   return this.#fetch(`/downloader/add`, {
   //     method: 'POST',
   //     body
@@ -233,7 +233,7 @@ export class DebridLinkClient {
   //  * @returns 
   //  */
   // async removeLink(ids: string|string[]): Promise<DownloadInfo> {
-  //   logger.trace(`Remove link(s)`, { ids });
+  //   logger.trace({ msg: `Remove link(s)`,  ids });
   //   return this.#fetch(`/downloader/${(Array.isArray(ids) ? JSON.stringify(ids) : ids)}/remove`, {
   //     method: 'DELETE'
   //   });

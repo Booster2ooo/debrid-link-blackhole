@@ -95,12 +95,12 @@ const logger = l.child({}, { msgPrefix: '[DownloadManager]' });
           await downloader.download(downloadUrl, fileTempDestination, fileDestination);
         }
         catch (ex) {
-          logger.warn(`Failed to download from '${downloadLink.downloadUrl}'`, ex);
+          logger.warn({ msg: `Failed to download from '${downloadLink.downloadUrl}'`,  ex });
           process.exitCode = 1;
         }
       }
       await downloader.destroy();
-      // logger.debug(`Removing torrent`, torrentInfo);
+      // logger.debug({ msg: `Removing torrent`,  torrentInfo });
       // await debridLinkClient.removeTorrent(torrentInfo.id);      
     }
     logger.info(`Processed '${target}'`);
