@@ -20,6 +20,8 @@ let watcher: Watcher | undefined;
 (async() => {
   try {
     logger.info('.: Debrid-Link Blackhole :.');
+    logger.trace('Env vars:');
+    logger.trace(process.env);
     logger.info(`Initiliazing AuthManager`);
     const mailer = new SmtpMailer();
     const authManager = new AuthManager(mailer);

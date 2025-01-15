@@ -29,7 +29,7 @@ const logger = l.child({}, { msgPrefix: '[DownloadManager]' });
   }
   logger.info(`Starting download for '${target}'`);
   const destination = resolvePath(process.env.DOWNLOADS, ['downloads']);
-  const tempDestination = resolvePath(process.env.IN_PROGESS, ['torrents', 'in-progress']) || destination;
+  const tempDestination = resolvePath(process.env.IN_PROGRESS, ['torrents', 'in-progress']) || destination;
   if (!destination && process.env.DOWNLOADER?.toLowerCase() === 'fetch') {
     throw new Error(`Missing downloads destination configuration`);
   }
