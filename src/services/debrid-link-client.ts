@@ -10,7 +10,7 @@ import {
   TorrentInfo
 } from '../models/index.js';
 import l from '../logger.js';
-import { retryableFetch } from '../utils.js';
+import { retryableFetch, sleep } from '../utils.js';
 import { AuthManager } from './auth-manager.js';
 
 const logger = l.child({}, { msgPrefix: '[DebridLinkClient]' });
@@ -31,6 +31,7 @@ export class DebridLinkClient {
     this.#authManager = authManager;
   }
 
+  #retries = 0;
   /**
    * Fetch, automatically adding token
    * @param input 
@@ -64,6 +65,7 @@ export class DebridLinkClient {
       ...init
     });
     if (response.status >= 200 && response.status < 300) {
+      this.#retries = 0;
       return response.json()
         .catch(() => Promise.resolve())
         .then((json: Response<T>) => {
@@ -71,6 +73,15 @@ export class DebridLinkClient {
           return json.value as T;
         });
     }
+    if (response.status === 401) {
+      if (this.#retries < 2) {
+        this.#retries++;
+        await sleep(500);
+        await this.#authManager.clearToken();
+        return this.#fetch(input, init);
+      }
+    }
+    this.#retries = 0;
     let body: string | undefined;
     try {
       body = await response.text();

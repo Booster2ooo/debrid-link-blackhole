@@ -20,7 +20,7 @@ export class Aria2Downloader implements IDownloader {
           .map(([key, value]) => [key.replace('ARIA2_','').toLowerCase(), key !== 'ARIA2_SECURE' ? value : value?.toLowerCase() === 'true'] as [keyof Aria2Options, string|boolean|number])
       ) as { [prop in keyof Aria2Options]: Aria2Options[prop]; };
     }
-    logger.debug('Aria2 config', options);
+    logger.trace({ msg: 'Aria2 config', options });
     this.#aria2 = new Aria2(options);
     // Connecting to WS enables notifications
     this.#aria2.open()

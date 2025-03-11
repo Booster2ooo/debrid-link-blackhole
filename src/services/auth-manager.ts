@@ -88,6 +88,16 @@ export class AuthManager {
     }
   }
 
+  async clearToken(): Promise<void> {
+    this.#accessToken = undefined;
+    this.#refreshToken = undefined;
+    this.#expiresAt = undefined;
+    try {
+      await unlink(this.#STORAGE);
+    }
+    catch {}
+  }
+
   async getToken(scope?: string): Promise<string> {
     await this.#deserializeAuthInfo();
     const now =  new Date();
@@ -120,10 +130,7 @@ export class AuthManager {
     }
     await this.#waitLock();
     await this.#lock();
-    this.#accessToken = undefined;
-    this.#refreshToken = undefined;
-    this.#expiresAt = undefined;
-    await this.#serializeAuthInfo();
+    await this.clearToken();
     const deviceCode = await fetch(`${this.#OAUTH_ENDPOINT}/device/code`, {
         method: 'POST',
         headers: {

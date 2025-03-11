@@ -79,6 +79,7 @@ const logger = l.child({}, { msgPrefix: '[DownloadManager]' });
           downloadLinks.forEach(link => console.log(link.downloadUrl));
           process.exit(0);
       }
+      const downloadProcesses = [];
       for(let downloadLink of downloadLinks) {
         try {
           const { name, downloadUrl, size } = downloadLink;
@@ -92,12 +93,19 @@ const logger = l.child({}, { msgPrefix: '[DownloadManager]' });
             }
           }
           catch {}
-          await downloader.download(downloadUrl, fileTempDestination, fileDestination);
+          downloadProcesses.push(downloader.download(downloadUrl, fileTempDestination, fileDestination));
         }
         catch (ex) {
-          logger.warn({ msg: `Failed to download from '${downloadLink.downloadUrl}'`,  ex });
+          logger.warn({ msg: `Failed to create download for '${downloadLink.downloadUrl}'`,  ex });
           process.exitCode = 1;
         }
+      }
+      try {
+        await Promise.all(downloadProcesses);
+      }
+      catch (ex) {
+        logger.warn({ msg: `Download failed'`,  ex });
+        process.exitCode = 1;
       }
       await downloader.destroy();
       // logger.debug({ msg: `Removing torrent`,  torrentInfo });
